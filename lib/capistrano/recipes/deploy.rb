@@ -52,7 +52,15 @@ _cset(:release_path)      { File.join(releases_path, release_name) }
 
 _cset(:releases)          { capture("ls -xt #{releases_path}").split.reverse }
 _cset(:current_release)   { File.join(releases_path, releases.last) }
-_cset(:previous_release)  { if releases.size > 1: File.join(releases_path, releases[-2]) else File.join(releases_path, releases[-2]) end}
+_cset(:previous_release)  do
+  if releases.size > 1
+    File.join(releases_path, releases[-2])
+  elsif releases.size == 0
+    raise "Nothing deployed yet."
+  else
+    File.join(releases_path, releases[0])
+  end
+end
 
 _cset(:current_revision)  { capture("cat #{current_path}/REVISION").chomp }
 _cset(:latest_revision)   { capture("cat #{current_release}/REVISION").chomp }
