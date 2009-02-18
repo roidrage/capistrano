@@ -208,19 +208,19 @@ module Capistrano
         # Getting the actual commit id, in case we were passed a tag
         # or partial sha or something - it will return the sha if you pass a sha, too
         def query_revision(revision)
-          raise ArgumentError, "Deploying remote branches has been deprecated.  Specify the remote branch as a local branch for the git repository you're deploying from (ie: '#{revision.gsub('origin/', '')}' rather than '#{revision}')." if revision =~ /^origin\//
+          raise ArgumentError, "Deploying remote branches is no longer supported.  Specify the remote branch as a local branch for the git repository you're deploying from (ie: '#{revision.gsub('origin/', '')}' rather than '#{revision}')." if revision =~ /^origin\//
           return revision if revision =~ /^[0-9a-f]{40}$/
           command = scm('ls-remote', repository, revision)
           result = yield(command)
           revdata = result.split(/[\t\n]/)
-	  newrev = nil
-	  revdata.each_slice(2) do |refs|
-	    rev, ref = *refs
-	    if ref.sub(/refs\/.*?\//, '').strip == revision
-	      newrev = rev
-	      break
+          newrev = nil
+          revdata.each_slice(2) do |refs|
+            rev, ref = *refs
+            if ref.sub(/refs\/.*?\//, '').strip == revision
+              newrev = rev
+              break
             end
-	  end
+          end
           raise "Unable to resolve revision for '#{revision}' on repository '#{repository}'." unless newrev =~ /^[0-9a-f]{40}$/
           return newrev
         end
